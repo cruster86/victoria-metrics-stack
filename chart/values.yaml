@@ -22,7 +22,7 @@ vmstaticscrape:
 
 vmrule:
   enabled: true
-  config: {}
+  config: []
 
 ###   PROMETHEUSRULE VALUES:
 
