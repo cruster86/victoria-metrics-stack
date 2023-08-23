@@ -15,6 +15,9 @@ tolerations:
 vmstaticscrape:
   enabled: true
 
+vmrule:
+  enabled: true
+
 prometheusrule:
   enabled: true
 

@@ -1,29 +1,4 @@
-{{- if .Values.vmagent.ingress.enabled -}}
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  labels:
-    app.kubernetes.io/instance: vmagent-victoria-metrics-vmagent
-    app.kubernetes.io/name: vmagent-victoria-metrics-vmagent
-  name: vmagent-victoria-metrics-vmagent
-  namespace: monitoring
-spec:
-  ingressClassName: {{ .Values.vmagent.ingress.ingressClassName }}
-  rules:
-  - host: {{ .Values.vmagent.ingress.host }}
-    http:
-      paths:
-      - backend:
-          service:
-            name: {{ .Values.vmagent.ingress.serviceName }}
-            port:
-              number: {{ .Values.vmagent.ingress.servicePort }}
-        path: /
-        pathType: Prefix
-{{- end }}
 {{- if .Values.vmalertmanager.ingress.enabled -}}
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

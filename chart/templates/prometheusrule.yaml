@@ -1,8 +1,8 @@
+{{- if .Values.prometheusrule.enabled -}}
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: prometheus-rules
-  namespace: monitoring
 spec:
   groups:
   - name: prometheus-rules
@@ -182,3 +182,4 @@ spec:
       record: instance:node_cpu:ratio
     - expr: sum(rate(node_cpu_seconds_total{mode!="idle",mode!="iowait",mode!="steal"}[5m]))
       record: cluster:node_cpu:sum_rate5m
+{{- end }}

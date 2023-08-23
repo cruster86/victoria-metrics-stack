@@ -1,10 +1,10 @@
+{{- if .Values.vmstaticscrape.enabled -}}
 ## cadvisor
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
   name: vmstaticscrape-cadvisor-metrics
-  namespace: monitoring
 spec:
   jobName: cadvisor-metrics
   targetEndpoints:
@@ -50,7 +50,6 @@ apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
   name: vmstaticscrape-etcd-metrics
-  namespace: monitoring
 spec:
   jobName: etcd-metrics
   targetEndpoints:
@@ -70,7 +69,6 @@ apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
   name: vmstaticscrape-kubelet-metrics
-  namespace: monitoring
 spec:
   jobName: kubelet-metrics
   targetEndpoints:
@@ -108,3 +106,4 @@ spec:
           name: cadvisor-client-secret
         serverName: kubernets
         insecureSkipVerify: true
+{{- end }}
