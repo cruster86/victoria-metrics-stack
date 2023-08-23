@@ -18,6 +18,7 @@ vmstaticscrape:
 
 vmrule:
   enabled: true
+  config: {}
 
 prometheusrule:
   enabled: true
