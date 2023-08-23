@@ -4,10 +4,10 @@
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
-  name: vmstaticscrape-{{ .name $top }}
+  name: vmstaticscrape-{{ .name }}
 spec:
   jobName: {{ .name $top }}
   targetEndpoints:
-{{ toYaml .targetEndpoints $top | indent 4 }}
+{{ toYaml .targetEndpoints | indent 4 }}
 {{- end }}
 {{- end }}
