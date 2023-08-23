@@ -1,6 +1,7 @@
 {{- if .Values.vmstaticscrape.enabled -}}
 {{- $top := . }}
 {{- range .Values.vmstaticscrape.config }}
+---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMStaticScrape
 metadata:
