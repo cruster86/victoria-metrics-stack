@@ -18,7 +18,7 @@ spec:
           severity: warning
           env: prod
         annotations:
-          message: '{{ printf "%.4g" $value }}%  targets pods in {{ $labels.namespace }} namespace are down.'
+          message: '{{ printf "%.4g" "$value" }}%  targets pods in {{ $labels.namespace }} namespace are down.'
 
 ## apiserver
 ---
@@ -56,7 +56,7 @@ spec:
         severity: critical
     - alert: KubeAPITerminatedRequests
       annotations:
-        description: The apiserver has terminated {{ $value | humanizePercentage }} of its incoming requests.
+        description: The apiserver has terminated {{ "$value" | humanizePercentage }} of its incoming requests.
         summary: The apiserver has terminated incoming requests.
       expr: sum(rate(apiserver_request_terminations_total{job="apiserver"}[10m])) / (sum(rate(apiserver_request_total{job="apiserver"}[10m])) + sum(rate(apiserver_request_terminations_total{job="apiserver"}[10m]))) > 0.20
       for: 5m
@@ -77,7 +77,7 @@ spec:
     rules:
     - alert: etcdInsufficientMembers
       annotations:
-        message: 'etcd: insufficient members ({{ $value }}).'
+        message: 'etcd: insufficient members ({{ "$value" }}).'
       expr: sum(up{job=~".*etcd.*"} == bool 1) by (job) < ((count(up{job=~".*etcd.*"}) by (job) + 1) / 2)
       for: 3m
       labels:
@@ -93,7 +93,7 @@ spec:
         cluster: univ-prod
     - alert: etcdHighFsyncDurations
       annotations:
-        message: 'etcd: 99th percentile fync durations are {{ $value }}s on etcd instance {{ $labels.instance }}.'
+        message: 'etcd: 99th percentile fync durations are {{ "$value" }}s on etcd instance {{ $labels.instance }}.'
       expr: |-
         histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket{job=~".*etcd.*"}[5m])) > 0.8
       for: 10m
@@ -102,7 +102,7 @@ spec:
         cluster: univ-prod
     - alert: etcdHighCommitDurations
       annotations:
-        message: 'etcd: 99th percentile commit durations {{ $value }}s on etcd instance {{ $labels.instance }}.'
+        message: 'etcd: 99th percentile commit durations {{ "$value" }}s on etcd instance {{ $labels.instance }}.'
       expr: |-
         histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket{job=~".*etcd.*"}[5m])) > 0.8
       for: 10m
@@ -276,7 +276,7 @@ spec:
     rules:
     - alert: KubePodCrashLooping
       annotations:
-        description: Pod {{ $labels.exported_namespace }}/{{ $labels.exported_pod }} ({{ $labels.exported_container }}) is restarting {{ printf "%.2f" $value }} times / 10 minutes.
+        description: Pod {{ $labels.exported_namespace }}/{{ $labels.exported_pod }} ({{ $labels.exported_container }}) is restarting {{ printf "%.2f" "$value" }} times / 10 minutes.
         summary: Pod is crash looping.
       expr: rate(kube_pod_container_status_restarts_total{job="kube-state-metrics",
         namespace=~".*"}[10m]) * 60 * 5 > 0
@@ -436,7 +436,7 @@ spec:
         severity: warning
     - alert: KubeDaemonSetNotScheduled
       annotations:
-        description: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
+        description: '{{ "$value" }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
           }} are not scheduled.'
         summary: DaemonSet pods are not scheduled.
       expr: |-
@@ -448,7 +448,7 @@ spec:
         severity: warning
     - alert: KubeDaemonSetMisScheduled
       annotations:
-        description: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
+        description: '{{ "$value" }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
           }} are running where they are not supposed to run.'
         summary: DaemonSet pods are misscheduled.
       expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~".*"}
@@ -491,7 +491,7 @@ spec:
     rules:
     - alert: KubePersistentVolumeFillingUp
       annotations:
-        description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is only {{ $value | humanizePercentage }} free.
+        description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is only {{ "$value" | humanizePercentage }} free.
         summary: PersistentVolume is filling up.
       expr: |-
         kubelet_volume_stats_available_bytes{job="kubelet-metrics", namespace=~".*"} / kubelet_volume_stats_capacity_bytes{job="kubelet-metrics", namespace=~".*"} < 0.03
@@ -500,7 +500,7 @@ spec:
         severity: critical
     - alert: KubePersistentVolumeFillingUp
       annotations:
-        description: Based on recent sampling, the PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is expected to fill up within four days. Currently {{ $value | humanizePercentage }} is available.
+        description: Based on recent sampling, the PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is expected to fill up within four days. Currently {{ "$value" | humanizePercentage }} is available.
         summary: PersistentVolume is filling up.
       expr: |-
         (kubelet_volume_stats_available_bytes{job="kubelet-metrics", namespace=~".*"} / kubelet_volume_stats_capacity_bytes{job="kubelet-metrics", namespace=~".*"} ) < 0.15 and predict_linear(kubelet_volume_stats_available_bytes{job="kubelet-metrics", namespace=~".*"}[6h], 4 * 24 * 3600) < 0
@@ -528,7 +528,7 @@ spec:
     rules:
     - alert: KubeVersionMismatch
       annotations:
-        description: There are {{ $value }} different semantic versions of Kubernetes components running.
+        description: There are {{ "$value" }} different semantic versions of Kubernetes components running.
         summary: Different semantic versions of Kubernetes components running.
       expr: count(count by (git_version) (label_replace(kubernetes_build_info{job!~"kube-dns|coredns"},"git_version","$1","git_version","(v[0-9]*.[0-9]*).*")))  > 1
       for: 15m
@@ -536,7 +536,7 @@ spec:
         severity: warning
     - alert: KubeClientErrors
       annotations:
-        description: Kubernetes API server client '{{ $labels.job }}/{{ $labels.instance }}' is experiencing {{ $value | humanizePercentage }} errors.'
+        description: Kubernetes API server client '{{ $labels.job }}/{{ $labels.instance }}' is experiencing {{ "$value" | humanizePercentage }} errors.'
         summary: Kubernetes API server client errors.
       expr: |-
         (sum(rate(rest_client_requests_total{code=~"5.."}[5m])) by (instance, job) / sum(rate(rest_client_requests_total[5m])) by (instance, job)) > 0.01
@@ -572,7 +572,7 @@ spec:
         severity: warning
     - alert: KubeletTooManyPods
       annotations:
-        description: Kubelet '{{ $labels.node }}' is running at {{ $value | humanizePercentage }} of its Pod capacity.
+        description: Kubelet '{{ $labels.node }}' is running at {{ "$value" | humanizePercentage }} of its Pod capacity.
         summary: Kubelet is running at capacity.
       expr: |-
         count by(node) ((kube_pod_status_phase{job="kube-state-metrics",phase="Running"} == 1) * on(instance,pod,namespace,cluster) group_left(node) topk by(instance,pod,namespace,cluster) (1, kube_pod_info{job="kube-state-metrics"})) / max by(node) ( kube_node_status_capacity{job="kube-state-metrics",resource="pods"} != 1 ) > 0.95
@@ -581,7 +581,7 @@ spec:
         severity: warning
     - alert: KubeNodeReadinessFlapping
       annotations:
-        description: The readiness status of node {{ $labels.node }} has changed {{ $value }} times in the last 15 minutes.
+        description: The readiness status of node {{ $labels.node }} has changed {{ "$value" }} times in the last 15 minutes.
         summary: Node readiness status is flapping.
       expr: sum(changes(kube_node_status_condition{status="true",condition="Ready"}[15m])) by (node) > 2
       for: 15m
@@ -589,7 +589,7 @@ spec:
         severity: warning
     - alert: KubeletPlegDurationHigh
       annotations:
-        description: The Kubelet Pod Lifecycle Event Generator has a 99th percentile duration of {{ $value }} seconds on node {{ $labels.node }}.
+        description: The Kubelet Pod Lifecycle Event Generator has a 99th percentile duration of {{ "$value" }} seconds on node {{ $labels.node }}.
         summary: Kubelet Pod Lifecycle Event Generator is taking too long to relist.
       expr: node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile{quantile="0.99"} >= 10
       for: 5m
@@ -597,7 +597,7 @@ spec:
         severity: warning
     - alert: KubeletPodStartUpLatencyHigh
       annotations:
-        description: Kubelet Pod startup 99th percentile latency is {{ $value }} seconds on node {{ $labels.node }}.
+        description: Kubelet Pod startup 99th percentile latency is {{ "$value" }} seconds on node {{ $labels.node }}.
         summary: Kubelet Pod startup latency is too high.
       expr: histogram_quantile(0.99, sum(rate(kubelet_pod_worker_duration_seconds_bucket{job="kubelet-metrics"}[5m])) by (instance, le)) * on(instance) group_left(node) kubelet_node_name{job="kubelet-metrics"} > 60
       for: 15m
@@ -605,35 +605,35 @@ spec:
         severity: warning
     - alert: KubeletClientCertificateExpiration
       annotations:
-        description: Client certificate for Kubelet on node {{ $labels.node }} expires in {{ $value | humanizeDuration }}.
+        description: Client certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet client certificate is about to expire.
       expr: kubelet_certificate_manager_client_ttl_seconds < 604800
       labels:
         severity: warning
     - alert: KubeletClientCertificateExpiration
       annotations:
-        description: Client certificate for Kubelet on node {{ $labels.node }} expires in {{ $value | humanizeDuration }}.
+        description: Client certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet client certificate is about to expire.
       expr: kubelet_certificate_manager_client_ttl_seconds < 86400
       labels:
         severity: critical
     - alert: KubeletServerCertificateExpiration
       annotations:
-        description: Server certificate for Kubelet on node {{ $labels.node }} expires in {{ $value | humanizeDuration }}.
+        description: Server certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet server certificate is about to expire.
       expr: kubelet_certificate_manager_server_ttl_seconds < 604800
       labels:
         severity: warning
     - alert: KubeletServerCertificateExpiration
       annotations:
-        description: Server certificate for Kubelet on node {{ $labels.node }} expires in {{ $value | humanizeDuration }}.
+        description: Server certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet server certificate is about to expire.
       expr: kubelet_certificate_manager_server_ttl_seconds < 86400
       labels:
         severity: critical
     - alert: KubeletClientCertificateRenewalErrors
       annotations:
-        description: Kubelet on node {{ $labels.node }} has failed to renew its client certificate ({{ $value | humanize }} errors in the last 5 minutes).
+        description: Kubelet on node {{ $labels.node }} has failed to renew its client certificate ({{ "$value" | humanize }} errors in the last 5 minutes).
         summary: Kubelet has failed to renew its client certificate.
       expr: increase(kubelet_certificate_manager_client_expiration_renew_errors[5m]) > 0
       for: 15m
@@ -641,7 +641,7 @@ spec:
         severity: warning
     - alert: KubeletServerCertificateRenewalErrors
       annotations:
-        description: Kubelet on node {{ $labels.node }} has failed to renew its server certificate ({{ $value | humanize }} errors in the last 5 minutes).
+        description: Kubelet on node {{ $labels.node }} has failed to renew its server certificate ({{ "$value" | humanize }} errors in the last 5 minutes).
         summary: Kubelet has failed to renew its server certificate.
       expr: increase(kubelet_server_expiration_renew_errors[5m]) > 0
       for: 15m
@@ -699,7 +699,7 @@ spec:
       annotations:
         description: |-
           Minio instance is offline
-            VALUE = {{ $value }}
+            VALUE = {{ "$value" }}
             LABELS = {{ $labels }}
         summary: Minio instance offline (instance {{ $labels.instance }})
       expr: minio_cluster_nodes_offline_total > 0
@@ -727,7 +727,7 @@ spec:
         severity: warning
     - alert: NodeFilesystemSpaceFillingUp
       annotations:
-        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left and is filling up.
+        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" "$value" }}% available space left and is filling up.
         summary: Filesystem is predicted to run out of space within the next 24 hours.
       expr: |-
         (
@@ -742,7 +742,7 @@ spec:
         severity: warning
     - alert: NodeFilesystemSpaceFillingUp
       annotations:
-        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left and is filling up fast.
+        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" "$value" }}% available space left and is filling up fast.
         summary: Filesystem is predicted to run out of space within the next 4 hours.
       expr: |-
         (
@@ -757,7 +757,7 @@ spec:
         severity: critical
     - alert: NodeFilesystemRunningOutOfSpace
       annotations:
-        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" $value }}% available space left.
+        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" "$value" }}% available space left.
         summary: Filesystem has less than 5% space left.
       expr: |-
         (
@@ -925,7 +925,7 @@ spec:
           severity: critical
         annotations:
           summary: "Instance {{ $labels.instance }} is dropping data from persistent queue"
-          description: "Vmagent dropped {{ $value | humanize1024 }} from persistent queue
+          description: "Vmagent dropped {{ "$value" | humanize1024 }} from persistent queue
               for the last 10m."
       - alert: RejectedRemoteWriteDataBlocksAreDropped
         expr: sum(increase(vmagent_remotewrite_packets_dropped_total[5m])) by (job, instance) > 0
@@ -1102,7 +1102,7 @@ spec:
           dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=73&var-instance={{ $labels.instance }}"
           summary: "Instance {{ $labels.instance }} will run out of disk space soon"
           description: "Taking into account current ingestion rate, free disk space will be enough only
-            for {{ $value | humanizeDuration }} on instance {{ $labels.instance }}.\n
+            for {{ "$value" | humanizeDuration }} on instance {{ $labels.instance }}.\n
             Consider to limit the ingestion rate, decrease retention or scale the disk space if possible."
       - alert: DiskRunsOutOfSpace
         expr: |
