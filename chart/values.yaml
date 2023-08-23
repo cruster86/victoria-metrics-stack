@@ -12,6 +12,12 @@ tolerations:
     operator: Equal
     value: monitoring
 
+vmstaticscrape:
+  enabled: true
+
+prometheusrule:
+  enabled: true
+
 # vmsingle values:
 
 vmsingle:
@@ -39,6 +45,8 @@ vmagent:
       urlRelabelConfig:
         name: "vmagent-relabel"
         key: "relabel-rules.yaml"
+  relabel:
+    enabled: true
   statefulMode: true
   statefulStorage:
     storageClassName: local-storage-monitoring

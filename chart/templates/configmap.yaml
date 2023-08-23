@@ -1,3 +1,4 @@
+{{- if .Values.vmagent.relabel.enabled -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,3 +11,4 @@ data:
       regex: "prometheus"
     - action: labeldrop
       regex: (container_id|container_short_id|docker_container_id|image_id)
+{{- end }}
