@@ -1,6 +1,6 @@
 vmstaticscrape:
   config:
-## cadvisor
+###   CADVISOR SCRAPE CONFIG
     - name: cadvisor-metrics
       targetEndpoints:
         - targets:
@@ -38,7 +38,7 @@ vmstaticscrape:
               name: cadvisor-client-secret
             serverName: kubernets
             insecureSkipVerify: true
-## etcd
+###   ETCD SCRAPE CONFIG
     - name: etcd-metrics
       targetEndpoints:
         - targets:
@@ -50,7 +50,7 @@ vmstaticscrape:
           labels:
             component: etcd
             cluster: univ-prod
-## kubelet
+###   KUBELET SCRAPE CONFIG
     - name: kubelet-metrics
       targetEndpoints:
         - targets:

@@ -1,4 +1,4 @@
-# global values:
+###   GLOBAL VALUES:
 
 imagePullSecrets:
   - name: infra-registry
@@ -12,19 +12,25 @@ tolerations:
     operator: Equal
     value: monitoring
 
+###   VMSTATICSCRAPE VALUES:
+
 vmstaticscrape:
   enabled: true
   config: []
+
+###   VMRULE VALUES:
 
 vmrule:
   enabled: true
   config: {}
 
+###   PROMETHEUSRULE VALUES:
+
 prometheusrule:
   enabled: true
   groups: []
 
-# vmsingle values:
+###   VMSINGLE VALUES:
 
 vmsingle:
   logLevel: WARN
@@ -39,7 +45,7 @@ vmsingle:
     volumeName: pv-victoriametrics
     size: 50Gi
 
-# vmagent values:
+###   VMAGENT VALUES:
 
 vmagent:
   logLevel: WARN
@@ -67,7 +73,7 @@ vmagent:
     enabled: true
   relabelconfig: {}
 
-# vmalert values:
+###   VMALERT VALUES:
 
 vmalert:
   logLevel: WARN
@@ -81,7 +87,7 @@ vmalert:
   notifier:
     url: "http://vmalertmanager-victoria-metrics-alertmanager.monitoring.svc:9093"
 
-# vmalertmanager values:
+###   VMALERTMANAGER VALUES:
 
 vmalertmanager:
   logFormat: json

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: victoria-metrics-stack
-description: Kubernetes monitoring on VictoriaMetrics stack.
+description: Kubernetes monitoring with VictoriaMetrics stack.
 type: application
 version: 0.1.0
 appVersion: v1.92.0
