@@ -1,0 +1,10 @@
+{{- if .Values.vmagent.relabel.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vmagent-relabel
+data:
+{{- range $key, $value := .Values.vmagent.relabelconfig }}
+{{ $key | indent 2}}: |-
+{{ $value | indent 4}}
+{{- end }}

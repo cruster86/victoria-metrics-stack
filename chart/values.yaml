@@ -62,6 +62,7 @@ vmagent:
     host: vmagent-univ-prod.sirius.online
     serviceName: vmagent-victoria-metrics-vmagent
     servicePort: 8429
+  relabelconfig: {}
 
 # vmalert values:
 
@@ -90,3 +91,4 @@ vmalertmanager:
     host: alertmanager-univ-prod.sirius.online
     serviceName: vmalertmanager-victoria-metrics-alertmanager
     servicePort: 9093
+  config: {}

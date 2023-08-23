@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.vmalertmanager.configSecret }}
+stringData:
+{{- range $key, $value := .Values.vmalertmanager.config }}
+{{ $key | indent 2}}: |-
+{{ $value | indent 4}}
+{{- end }}
