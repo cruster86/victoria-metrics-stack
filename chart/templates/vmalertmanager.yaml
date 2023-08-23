@@ -3,16 +3,15 @@ kind: VMAlertmanager
 metadata:
   name: victoria-metrics-alertmanager
 spec:
-  logFormat: json
   imagePullSecrets:
-    - name: infra-registry
-  replicaCount: 1
-  selectAllByDefault: false
-  configSecret: alertmanager-config
+{{ toYaml .Values.imagePullSecrets | indent 4 }}
+  logFormat: {{ .Values.vmalertmanager.logFormat }}
+  replicaCount: {{ .Values.vmalertmanager.replicaCount }}
+  selectAllByDefault: {{ .Values.vmalertmanager.selectAllByDefault }}
+  configSecret: {{ .Values.vmalertmanager.configSecret }}
+{{- with .Values.nodeSelector }}
   nodeSelector:
-    kubernetes.io/node-role: monitoring
+{{ toYaml . | indent 4 }}
+{{- end }}
   tolerations:
-    - effect: NoSchedule
-      key: kubernetes.io/node-role
-      operator: Equal
-      value: monitoring
+{{ toYaml .Values.tolerations | indent 4 }}

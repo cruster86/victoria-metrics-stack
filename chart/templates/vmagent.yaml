@@ -3,11 +3,12 @@ kind: VMAgent
 metadata:
   name: victoria-metrics-vmagent
 spec:
-  scrapeInterval: 60s
-  logFormat: json
-  logLevel: WARN
+  logFormat: {{ .Values.vmagent.logFormat }}
+  logLevel: {{ .Values.vmagent.logLevel }}
+  replicaCount: {{ .Values.vmagent.replicaCount }}
+  scrapeInterval: {{ .Values.vmagent.scrapeInterval }}
   imagePullSecrets:
-    - name: infra-registry
+{{ toYaml .Values.imagePullSecrets | indent 4 }}
   serviceScrapeNamespaceSelector: {}
   podScrapeNamespaceSelector: {}
   podScrapeSelector: {}
@@ -16,28 +17,23 @@ spec:
   nodeScrapeNamespaceSelector: {}
   staticScrapeSelector: {}
   staticScrapeNamespaceSelector: {}
-  replicaCount: 1
   remoteWrite:
-    - url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428/api/v1/write"
-      urlRelabelConfig:
-        name: "vmagent-relabel"
-        key: "relabel-rules.yaml"
-  statefulMode: true
+{{ toYaml .Values.vmagent.remoteWrite | indent 4 }}
+  statefulMode: {{ .Values.vmagent.statefulMode }}
   statefulStorage:
     volumeClaimTemplate:
       spec:
-        storageClassName: local-storage-monitoring
-        volumeMode: Filesystem
-        volumeName: pv-vmagent
+        storageClassName: {{ .Values.vmagent.statefulStorage.storageClassName }}
+        volumeMode: {{ .Values.vmagent.statefulStorage.volumeMode }}
+        volumeName: {{ .Values.vmagent.statefulStorage.volumeName }}
         accessModes:
           - ReadWriteOnce
         resources:
           requests:
-            storage: 20Gi
+            storage: {{ .Values.vmagent.statefulStorage.size }}
+{{- with .Values.nodeSelector }}
   nodeSelector:
-    kubernetes.io/node-role: monitoring
+{{ toYaml . | indent 4 }}
+{{- end }}
   tolerations:
-    - effect: NoSchedule
-      key: kubernetes.io/node-role
-      operator: Equal
-      value: monitoring
+{{ toYaml .Values.tolerations | indent 4 }}

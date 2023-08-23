@@ -1,5 +1,81 @@
+# global values:
+
+imagePullSecrets:
+  - name: infra-registry
+
+nodeSelector:
+  kubernetes.io/node-role: monitoring
+
 tolerations:
   - effect: NoSchedule
     key: kubernetes.io/node-role
     operator: Equal
     value: monitoring
+
+# vmsingle values:
+
+vmsingle:
+  logLevel: WARN
+  logFormat: json
+  retentionPeriod: 1
+  dnsPolicy: ClusterFirst
+  replicaCount: 1
+  removePvcAfterDelete: true
+  storage:
+    storageClassName: local-storage-monitoring
+    volumeMode: Filesystem
+    volumeName: pv-victoriametrics
+    size: 50Gi
+
+# vmagent values:
+
+vmagent:
+  logLevel: WARN
+  logFormat: json
+  replicaCount: 1
+  scrapeInterval: 60s
+  remoteWrite:
+    - url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428/api/v1/write"
+      urlRelabelConfig:
+        name: "vmagent-relabel"
+        key: "relabel-rules.yaml"
+  statefulMode: true
+  statefulStorage:
+    storageClassName: local-storage-monitoring
+    volumeMode: Filesystem
+    volumeName: pv-vmagent
+    size: 20Gi
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    host: vmagent-univ-prod.sirius.online
+    serviceName: vmagent-victoria-metrics-vmagent
+    servicePort: 8429
+
+# vmalert values:
+
+vmalert:
+  logLevel: WARN
+  logFormat: json
+  replicaCount: 1
+  evaluationInterval: "30s"
+  remoteWrite:
+    url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428"
+  datasource:
+    url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428"
+  notifier:
+    url: "http://vmalertmanager-victoria-metrics-alertmanager.monitoring.svc:9093"
+
+# vmalertmanager values:
+
+vmalertmanager:
+  logFormat: json
+  replicaCount: 1
+  selectAllByDefault: false
+  configSecret: alertmanager-config
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    host: alertmanager-univ-prod.sirius.online
+    serviceName: vmalertmanager-victoria-metrics-alertmanager
+    servicePort: 9093

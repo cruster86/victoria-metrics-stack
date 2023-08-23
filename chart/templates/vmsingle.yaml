@@ -3,27 +3,26 @@ kind: VMSingle
 metadata:
   name: victoria-metrics-single
 spec:
-  logFormat: json
-  logLevel: WARN
-  dnsPolicy: ClusterFirst
+  logFormat: {{ .Values.vmsingle.logFormat }}
+  logLevel: {{ .Values.vmsingle.logLevel }}
+  dnsPolicy: {{ .Values.vmsingle.dnsPolicy }}
+  replicaCount: {{ .Values.vmsingle.replicaCount }}
+  retentionPeriod: {{ .Values.vmsingle.retentionPeriod | quote }}
+  removePvcAfterDelete: {{ .Values.vmsingle.removePvcAfterDelete }}
   imagePullSecrets:
-    - name: infra-registry
-  replicaCount: 1
-  retentionPeriod: "1"
-  removePvcAfterDelete: true
+{{ toYaml .Values.imagePullSecrets | indent 4 }}
   storage:
-    storageClassName: local-storage-monitoring
-    volumeMode: Filesystem
-    volumeName: pv-victoriametrics
+    storageClassName: {{ .Values.vmsingle.storage.storageClassName }}
+    volumeMode: {{ .Values.vmsingle.storage.volumeMode }}
+    volumeName: {{ .Values.vmsingle.storage.volumeName }}
     accessModes:
       - ReadWriteOnce
     resources:
       requests:
-        storage: 50Gi
+        storage: {{ .Values.vmsingle.storage.size }}
+{{- with .Values.nodeSelector }}
   nodeSelector:
-    kubernetes.io/node-role: monitoring
+{{ toYaml . | indent 4 }}
+{{- end }}
   tolerations:
-    - effect: NoSchedule
-      key: kubernetes.io/node-role
-      operator: Equal
-      value: monitoring
+{{ toYaml .Values.tolerations | indent 4 }}

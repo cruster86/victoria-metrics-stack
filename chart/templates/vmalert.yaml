@@ -3,24 +3,29 @@ kind: VMAlert
 metadata:
   name: victoria-metrics-alertserver
 spec:
-  logFormat: json
-  logLevel: WARN
+  logFormat: {{ .Values.vmalert.logFormat }}
+  logLevel: {{ .Values.vmalert.logLevel }}
   imagePullSecrets:
-    - name: infra-registry
-  replicaCount: 1
+{{ toYaml .Values.imagePullSecrets | indent 4 }}
+  replicaCount: {{ .Values.vmalert.replicaCount }}
+{{- with .Values.vmalert.remoteWrite }}
   remoteWrite:
-    url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428"
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.vmalert.datasource }}
   datasource:
-    url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428"
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.vmalert.notifier }}
   notifier:
-    url: "http://vmalertmanager-victoria-metrics-alertmanager.monitoring.svc:9093"
-  evaluationInterval: "30s"
+{{ toYaml . | indent 4 }}
+{{- end }}
+  evaluationInterval: {{ .Values.vmalert.evaluationInterval | quote }}
   ruleNamespaceSelector: {}
   ruleSelector: {}
+{{- with .Values.nodeSelector }}
   nodeSelector:
-    kubernetes.io/node-role: monitoring
+{{ toYaml . | indent 4 }}
+{{- end }}
   tolerations:
-    - effect: NoSchedule
-      key: kubernetes.io/node-role
-      operator: Equal
-      value: monitoring
+{{ toYaml .Values.tolerations | indent 4 }}

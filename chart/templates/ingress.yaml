@@ -1,3 +1,4 @@
+{{- if .Values.vmagent.ingress.enabled -}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -8,18 +9,20 @@ metadata:
   name: vmagent-victoria-metrics-vmagent
   namespace: monitoring
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.vmagent.ingress.ingressClassName }}
   rules:
-  - host: vmagent-univ-prod.sirius.online
+  - host: {{ .Values.vmagent.ingress.host }}
     http:
       paths:
       - backend:
           service:
-            name: vmagent-victoria-metrics-vmagent
+            name: {{ .Values.vmagent.ingress.serviceName }}
             port:
-              number: 8429
+              number: {{ .Values.vmagent.ingress.servicePort }}
         path: /
         pathType: Prefix
+{{- end }}
+{{- if .Values.vmalertmanager.ingress.enabled -}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -30,15 +33,16 @@ metadata:
   name: vmalertmanager-victoria-metrics-alertmanager
   namespace: monitoring
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.vmalertmanager.ingress.ingressClassName }}
   rules:
-  - host: alertmanager-univ-prod.sirius.online
+  - host: {{ .Values.vmalertmanager.ingress.host }}
     http:
       paths:
       - backend:
           service:
-            name: vmalertmanager-victoria-metrics-alertmanager
+            name: {{ .Values.vmalertmanager.ingress.serviceName }}
             port:
-              number: 9093
+              number: {{ .Values.vmalertmanager.ingress.servicePort }}
         path: /
         pathType: Prefix
+{{- end }}
