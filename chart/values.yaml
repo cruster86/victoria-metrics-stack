@@ -50,8 +50,6 @@ vmagent:
       urlRelabelConfig:
         name: "vmagent-relabel"
         key: "relabel-rules.yaml"
-  relabel:
-    enabled: true
   statefulMode: true
   statefulStorage:
     storageClassName: local-storage-monitoring
@@ -64,6 +62,8 @@ vmagent:
     host: vmagent-univ-prod.sirius.online
     serviceName: vmagent-victoria-metrics-vmagent
     servicePort: 8429
+  relabel:
+    enabled: true
   relabelconfig: {}
 
 # vmalert values:

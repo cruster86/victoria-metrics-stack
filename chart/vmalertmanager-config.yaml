@@ -1,26 +1,27 @@
-config:
-  alertmanager.yaml: |
-    global:
-      resolve_timeout: 2m
-    route:
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 6h
-      receiver: 'rob univ dev'
-      group_by: ['job']
-      routes:
-        - receiver: "rob univ dev"
-          group_wait: 30s
-          group_interval: 5m
-          repeat_interval: 6h
-          match_re:
-            severity: critical|warning
-          continue: true
-    receivers:
-    - name: 'rob univ dev'
-      webhook_configs:
-      - http_config:
-          tls_config:
-            insecure_skip_verify: true
-        send_resolved: true
-        url: "https://rob.sirius.online/prometheus"
+vmalertmanager:
+  config:
+    alertmanager.yaml: |-
+      global:
+        resolve_timeout: 2m
+      route:
+        group_wait: 30s
+        group_interval: 5m
+        repeat_interval: 6h
+        receiver: 'rob univ dev'
+        group_by: ['job']
+        routes:
+          - receiver: "rob univ dev"
+            group_wait: 30s
+            group_interval: 5m
+            repeat_interval: 6h
+            match_re:
+              severity: critical|warning
+            continue: true
+      receivers:
+      - name: 'rob univ dev'
+        webhook_configs:
+        - http_config:
+            tls_config:
+              insecure_skip_verify: true
+          send_resolved: true
+          url: "https://rob.sirius.online/prometheus"
