@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanager
+metadata:
+  name: victoria-metrics-alertmanager
+spec:
+  logFormat: json
+  imagePullSecrets:
+    - name: infra-registry
+  replicaCount: 1
+  selectAllByDefault: false
+  configSecret: alertmanager-config
+  nodeSelector:
+    kubernetes.io/node-role: monitoring
+  tolerations:
+    - effect: NoSchedule
+      key: kubernetes.io/node-role
+      operator: Equal
+      value: monitoring

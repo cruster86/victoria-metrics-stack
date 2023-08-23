@@ -1,0 +1,29 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMSingle
+metadata:
+  name: victoria-metrics-single
+spec:
+  logFormat: json
+  logLevel: WARN
+  dnsPolicy: ClusterFirst
+  imagePullSecrets:
+    - name: infra-registry
+  replicaCount: 1
+  retentionPeriod: "1"
+  removePvcAfterDelete: true
+  storage:
+    storageClassName: local-storage-monitoring
+    volumeMode: Filesystem
+    volumeName: pv-victoriametrics
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 50Gi
+  nodeSelector:
+    kubernetes.io/node-role: monitoring
+  tolerations:
+    - effect: NoSchedule
+      key: kubernetes.io/node-role
+      operator: Equal
+      value: monitoring

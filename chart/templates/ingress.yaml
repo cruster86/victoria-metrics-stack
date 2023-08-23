@@ -1,0 +1,44 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/instance: vmagent-victoria-metrics-vmagent
+    app.kubernetes.io/name: vmagent-victoria-metrics-vmagent
+  name: vmagent-victoria-metrics-vmagent
+  namespace: monitoring
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: vmagent-univ-prod.sirius.online
+    http:
+      paths:
+      - backend:
+          service:
+            name: vmagent-victoria-metrics-vmagent
+            port:
+              number: 8429
+        path: /
+        pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/instance: vmalertmanager-victoria-metrics-alertmanager
+    app.kubernetes.io/name: vmalertmanager-victoria-metrics-alertmanager
+  name: vmalertmanager-victoria-metrics-alertmanager
+  namespace: monitoring
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: alertmanager-univ-prod.sirius.online
+    http:
+      paths:
+      - backend:
+          service:
+            name: vmalertmanager-victoria-metrics-alertmanager
+            port:
+              number: 9093
+        path: /
+        pathType: Prefix

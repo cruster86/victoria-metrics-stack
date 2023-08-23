@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vmagent-relabel
+data:
+  relabel-rules.yaml: |
+    - action: labeldrop
+      regex: "(controller_class|controller_namespace)"
+    - action: labeldrop
+      regex: "prometheus"
+    - action: labeldrop
+      regex: (container_id|container_short_id|docker_container_id|image_id)

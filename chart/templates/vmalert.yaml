@@ -1,0 +1,26 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: victoria-metrics-alertserver
+spec:
+  logFormat: json
+  logLevel: WARN
+  imagePullSecrets:
+    - name: infra-registry
+  replicaCount: 1
+  remoteWrite:
+    url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428"
+  datasource:
+    url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428"
+  notifier:
+    url: "http://vmalertmanager-victoria-metrics-alertmanager.monitoring.svc:9093"
+  evaluationInterval: "30s"
+  ruleNamespaceSelector: {}
+  ruleSelector: {}
+  nodeSelector:
+    kubernetes.io/node-role: monitoring
+  tolerations:
+    - effect: NoSchedule
+      key: kubernetes.io/node-role
+      operator: Equal
+      value: monitoring

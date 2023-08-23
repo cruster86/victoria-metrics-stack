@@ -1,0 +1,5 @@
+tolerations:
+  - effect: NoSchedule
+    key: kubernetes.io/node-role
+    operator: Equal
+    value: monitoring

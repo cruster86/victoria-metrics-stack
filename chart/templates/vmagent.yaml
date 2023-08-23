@@ -1,0 +1,43 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: victoria-metrics-vmagent
+spec:
+  scrapeInterval: 60s
+  logFormat: json
+  logLevel: WARN
+  imagePullSecrets:
+    - name: infra-registry
+  serviceScrapeNamespaceSelector: {}
+  podScrapeNamespaceSelector: {}
+  podScrapeSelector: {}
+  serviceScrapeSelector: {}
+  nodeScrapeSelector: {}
+  nodeScrapeNamespaceSelector: {}
+  staticScrapeSelector: {}
+  staticScrapeNamespaceSelector: {}
+  replicaCount: 1
+  remoteWrite:
+    - url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428/api/v1/write"
+      urlRelabelConfig:
+        name: "vmagent-relabel"
+        key: "relabel-rules.yaml"
+  statefulMode: true
+  statefulStorage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: local-storage-monitoring
+        volumeMode: Filesystem
+        volumeName: pv-vmagent
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 20Gi
+  nodeSelector:
+    kubernetes.io/node-role: monitoring
+  tolerations:
+    - effect: NoSchedule
+      key: kubernetes.io/node-role
+      operator: Equal
+      value: monitoring
