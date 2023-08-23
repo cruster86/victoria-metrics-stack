@@ -1,5 +1,5 @@
 config:
-  relabel-rules.yaml: |
+  relabel-rules.yaml: |-
     - action: labeldrop
       regex: "(controller_class|controller_namespace)"
     - action: labeldrop
