@@ -6,7 +6,7 @@ kind: VMStaticScrape
 metadata:
   name: vmstaticscrape-{{ .name }}
 spec:
-  jobName: {{ .name $top }}
+  jobName: {{ .name }}
   targetEndpoints:
 {{ toYaml .targetEndpoints | indent 4 }}
 {{- end }}
