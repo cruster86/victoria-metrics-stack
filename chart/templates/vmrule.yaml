@@ -18,7 +18,7 @@ spec:
           severity: warning
           env: prod
         annotations:
-          message: '{{ printf "%.4g" "$value" }}%  targets pods in {{ $labels.namespace }} namespace are down.'
+          message: '{{ printf "%.4g" "$value" }}%  targets pods in {{ "$labels".namespace }} namespace are down.'
 
 ## apiserver
 ---
@@ -85,7 +85,7 @@ spec:
         cluster: univ-prod
     - alert: etcdNoLeader
       annotations:
-        message: 'etcd: member {{ $labels.instance }} has no leader.'
+        message: 'etcd: member {{ "$labels".instance }} has no leader.'
       expr: etcd_server_has_leader{job=~".*etcd.*"} == 0
       for: 1m
       labels:
@@ -93,7 +93,7 @@ spec:
         cluster: univ-prod
     - alert: etcdHighFsyncDurations
       annotations:
-        message: 'etcd: 99th percentile fync durations are {{ "$value" }}s on etcd instance {{ $labels.instance }}.'
+        message: 'etcd: 99th percentile fync durations are {{ "$value" }}s on etcd instance {{ "$labels".instance }}.'
       expr: |-
         histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket{job=~".*etcd.*"}[5m])) > 0.8
       for: 10m
@@ -102,7 +102,7 @@ spec:
         cluster: univ-prod
     - alert: etcdHighCommitDurations
       annotations:
-        message: 'etcd: 99th percentile commit durations {{ "$value" }}s on etcd instance {{ $labels.instance }}.'
+        message: 'etcd: 99th percentile commit durations {{ "$value" }}s on etcd instance {{ "$labels".instance }}.'
       expr: |-
         histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket{job=~".*etcd.*"}[5m])) > 0.8
       for: 10m
@@ -276,7 +276,7 @@ spec:
     rules:
     - alert: KubePodCrashLooping
       annotations:
-        description: Pod {{ $labels.exported_namespace }}/{{ $labels.exported_pod }} ({{ $labels.exported_container }}) is restarting {{ printf "%.2f" "$value" }} times / 10 minutes.
+        description: Pod {{ "$labels".exported_namespace }}/{{ "$labels".exported_pod }} ({{ "$labels".exported_container }}) is restarting {{ printf "%.2f" "$value" }} times / 10 minutes.
         summary: Pod is crash looping.
       expr: rate(kube_pod_container_status_restarts_total{job="kube-state-metrics",
         namespace=~".*"}[10m]) * 60 * 5 > 0
@@ -286,7 +286,7 @@ spec:
         severity: warning
     - alert: KubePodNotReady
       annotations:
-        description: Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
+        description: Pod {{ "$labels".namespace }}/{{ "$labels".pod }} has been in a non-ready
           state for longer than 15 minutes.
         summary: Pod has been in a non-ready state for more than 15 minutes.
       expr: |-
@@ -303,7 +303,7 @@ spec:
         severity: warning
     - alert: KubeDeploymentGenerationMismatch
       annotations:
-        description: Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment }} does not match, this indicates that the Deployment has failed but has not been rolled back.
+        description: Deployment generation for {{ "$labels".namespace }}/{{ "$labels".deployment }} does not match, this indicates that the Deployment has failed but has not been rolled back.
         summary: Deployment generation mismatch due to possible roll-back
       expr: |-
         kube_deployment_status_observed_generation{job="kube-state-metrics", namespace=~".*"}
@@ -315,7 +315,7 @@ spec:
         severity: warning
     - alert: KubeDeploymentReplicasMismatch
       annotations:
-        description: Deployment {{ $labels.exported_namespace }}/{{ $labels.deployment }} has
+        description: Deployment {{ "$labels".exported_namespace }}/{{ "$labels".deployment }} has
           not matched the expected number of replicas for longer than 15 minutes.
         summary: Deployment has not matched the expected number of replicas.
       expr: |-
@@ -334,7 +334,7 @@ spec:
         severity: warning
     - alert: KubeStatefulSetReplicasMismatch
       annotations:
-        description: StatefulSet {{ $labels.exported_namespace }}/{{ $labels.statefulset }}
+        description: StatefulSet {{ "$labels".exported_namespace }}/{{ "$labels".statefulset }}
           has not matched the expected number of replicas for longer than 15 minutes.
         summary: Deployment has not matched the expected number of replicas.
       expr: |-
@@ -353,7 +353,7 @@ spec:
         severity: warning
     - alert: KubeStatefulSetGenerationMismatch
       annotations:
-        description: StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset }} does not match, this indicates that the StatefulSet has failed but has
+        description: StatefulSet generation for {{ "$labels".namespace }}/{{ "$labels".statefulset }} does not match, this indicates that the StatefulSet has failed but has
           not been rolled back.
         summary: StatefulSet generation mismatch due to possible roll-back
       expr: |-
@@ -366,7 +366,7 @@ spec:
         severity: warning
     - alert: KubeStatefulSetUpdateNotRolledOut
       annotations:
-        description: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }}
+        description: StatefulSet {{ "$labels".namespace }}/{{ "$labels".statefulset }}
           update has not been rolled out.
         summary: StatefulSet update has not been rolled out.
       expr: |-
@@ -393,7 +393,7 @@ spec:
         severity: warning
     - alert: KubeDaemonSetRolloutStuck
       annotations:
-        description: DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset }} has
+        description: DaemonSet {{ "$labels".namespace }}/{{ "$labels".daemonset }} has
           not finished or progressed for at least 15 minutes.
         summary: DaemonSet rollout is stuck.
       expr: |-
@@ -425,7 +425,7 @@ spec:
         severity: warning
     - alert: KubeContainerWaiting
       annotations:
-        description: Pod {{ $labels.namespace }}/{{ $labels.pod }} container {{ $labels.container}}
+        description: Pod {{ "$labels".namespace }}/{{ "$labels".pod }} container {{ "$labels".container}}
           has been in waiting state for longer than 1 hour.
         summary: Pod container waiting longer than 1 hour
       expr: sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason{job="kube-state-metrics",
@@ -436,7 +436,7 @@ spec:
         severity: warning
     - alert: KubeDaemonSetNotScheduled
       annotations:
-        description: '{{ "$value" }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
+        description: '{{ "$value" }} Pods of DaemonSet {{ "$labels".namespace }}/{{ "$labels".daemonset
           }} are not scheduled.'
         summary: DaemonSet pods are not scheduled.
       expr: |-
@@ -448,7 +448,7 @@ spec:
         severity: warning
     - alert: KubeDaemonSetMisScheduled
       annotations:
-        description: '{{ "$value" }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
+        description: '{{ "$value" }} Pods of DaemonSet {{ "$labels".namespace }}/{{ "$labels".daemonset
           }} are running where they are not supposed to run.'
         summary: DaemonSet pods are misscheduled.
       expr: kube_daemonset_status_number_misscheduled{job="kube-state-metrics", namespace=~".*"}
@@ -459,7 +459,7 @@ spec:
         severity: warning
     - alert: KubeJobCompletion
       annotations:
-        description: Job {{ $labels.exported_namespace }}/{{ $labels.job_name }} не может завершиться уже более 12 часов.
+        description: Job {{ "$labels".exported_namespace }}/{{ "$labels".job_name }} не может завершиться уже более 12 часов.
         summary: Job did not complete in time
       expr: kube_job_spec_completions{job="kube-state-metrics", namespace=~".*"}
         - kube_job_status_succeeded{job="kube-state-metrics", namespace=~".*"}  >
@@ -470,7 +470,7 @@ spec:
         severity: warning
     - alert: KubeJobFailed
       annotations:
-        description: Job {{ $labels.exported_namespace }}/{{ $labels.job_name }} завершилась неудачно.
+        description: Job {{ "$labels".exported_namespace }}/{{ "$labels".job_name }} завершилась неудачно.
         summary: Job failed to complete.
       expr: kube_job_failed{job="kube-state-metrics", namespace=~".*"}  >
         0
@@ -491,7 +491,7 @@ spec:
     rules:
     - alert: KubePersistentVolumeFillingUp
       annotations:
-        description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is only {{ "$value" | humanizePercentage }} free.
+        description: The PersistentVolume claimed by {{ "$labels".persistentvolumeclaim }} in Namespace {{ "$labels".namespace }} is only {{ "$value" | humanizePercentage }} free.
         summary: PersistentVolume is filling up.
       expr: |-
         kubelet_volume_stats_available_bytes{job="kubelet-metrics", namespace=~".*"} / kubelet_volume_stats_capacity_bytes{job="kubelet-metrics", namespace=~".*"} < 0.03
@@ -500,7 +500,7 @@ spec:
         severity: critical
     - alert: KubePersistentVolumeFillingUp
       annotations:
-        description: Based on recent sampling, the PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is expected to fill up within four days. Currently {{ "$value" | humanizePercentage }} is available.
+        description: Based on recent sampling, the PersistentVolume claimed by {{ "$labels".persistentvolumeclaim }} in Namespace {{ "$labels".namespace }} is expected to fill up within four days. Currently {{ "$value" | humanizePercentage }} is available.
         summary: PersistentVolume is filling up.
       expr: |-
         (kubelet_volume_stats_available_bytes{job="kubelet-metrics", namespace=~".*"} / kubelet_volume_stats_capacity_bytes{job="kubelet-metrics", namespace=~".*"} ) < 0.15 and predict_linear(kubelet_volume_stats_available_bytes{job="kubelet-metrics", namespace=~".*"}[6h], 4 * 24 * 3600) < 0
@@ -509,7 +509,7 @@ spec:
         severity: warning
     - alert: KubePersistentVolumeErrors
       annotations:
-        description: The persistent volume {{ $labels.persistentvolume }} has status {{ $labels.phase }}.
+        description: The persistent volume {{ "$labels".persistentvolume }} has status {{ "$labels".phase }}.
         summary: PersistentVolume is having issues with provisioning.
       expr: kube_persistentvolume_status_phase{phase=~"Failed|Pending",job="kube-state-metrics"} > 0
       for: 5m
@@ -536,7 +536,7 @@ spec:
         severity: warning
     - alert: KubeClientErrors
       annotations:
-        description: Kubernetes API server client '{{ $labels.job }}/{{ $labels.instance }}' is experiencing {{ "$value" | humanizePercentage }} errors.'
+        description: Kubernetes API server client '{{ "$labels".job }}/{{ "$labels".instance }}' is experiencing {{ "$value" | humanizePercentage }} errors.'
         summary: Kubernetes API server client errors.
       expr: |-
         (sum(rate(rest_client_requests_total{code=~"5.."}[5m])) by (instance, job) / sum(rate(rest_client_requests_total[5m])) by (instance, job)) > 0.01
@@ -556,7 +556,7 @@ spec:
     rules:
     - alert: KubeNodeNotReady
       annotations:
-        description: '{{ $labels.node }} has been unready for more than 15 minutes.'
+        description: '{{ "$labels".node }} has been unready for more than 15 minutes.'
         summary: Node is not ready.
       expr: kube_node_status_condition{job="kube-state-metrics",condition="Ready",status="true"} == 0
       for: 15m
@@ -564,7 +564,7 @@ spec:
         severity: warning
     - alert: KubeNodeUnreachable
       annotations:
-        description: '{{ $labels.node }} is unreachable and some workloads may be rescheduled.'
+        description: '{{ "$labels".node }} is unreachable and some workloads may be rescheduled.'
         summary: Node is unreachable because of taint.
       expr: (kube_node_spec_taint{job="kube-state-metrics",key="node.kubernetes.io/unreachable",effect="NoSchedule"} unless ignoring(key,value) kube_node_spec_taint{job="kube-state-metrics",key=~"ToBeDeletedByClusterAutoscaler|cloud.google.com/impending-node-termination|aws-node-termination-handler/spot-itn"})  == 1
       for: 15m
@@ -572,7 +572,7 @@ spec:
         severity: warning
     - alert: KubeletTooManyPods
       annotations:
-        description: Kubelet '{{ $labels.node }}' is running at {{ "$value" | humanizePercentage }} of its Pod capacity.
+        description: Kubelet '{{ "$labels".node }}' is running at {{ "$value" | humanizePercentage }} of its Pod capacity.
         summary: Kubelet is running at capacity.
       expr: |-
         count by(node) ((kube_pod_status_phase{job="kube-state-metrics",phase="Running"} == 1) * on(instance,pod,namespace,cluster) group_left(node) topk by(instance,pod,namespace,cluster) (1, kube_pod_info{job="kube-state-metrics"})) / max by(node) ( kube_node_status_capacity{job="kube-state-metrics",resource="pods"} != 1 ) > 0.95
@@ -581,7 +581,7 @@ spec:
         severity: warning
     - alert: KubeNodeReadinessFlapping
       annotations:
-        description: The readiness status of node {{ $labels.node }} has changed {{ "$value" }} times in the last 15 minutes.
+        description: The readiness status of node {{ "$labels".node }} has changed {{ "$value" }} times in the last 15 minutes.
         summary: Node readiness status is flapping.
       expr: sum(changes(kube_node_status_condition{status="true",condition="Ready"}[15m])) by (node) > 2
       for: 15m
@@ -589,7 +589,7 @@ spec:
         severity: warning
     - alert: KubeletPlegDurationHigh
       annotations:
-        description: The Kubelet Pod Lifecycle Event Generator has a 99th percentile duration of {{ "$value" }} seconds on node {{ $labels.node }}.
+        description: The Kubelet Pod Lifecycle Event Generator has a 99th percentile duration of {{ "$value" }} seconds on node {{ "$labels".node }}.
         summary: Kubelet Pod Lifecycle Event Generator is taking too long to relist.
       expr: node_quantile:kubelet_pleg_relist_duration_seconds:histogram_quantile{quantile="0.99"} >= 10
       for: 5m
@@ -597,7 +597,7 @@ spec:
         severity: warning
     - alert: KubeletPodStartUpLatencyHigh
       annotations:
-        description: Kubelet Pod startup 99th percentile latency is {{ "$value" }} seconds on node {{ $labels.node }}.
+        description: Kubelet Pod startup 99th percentile latency is {{ "$value" }} seconds on node {{ "$labels".node }}.
         summary: Kubelet Pod startup latency is too high.
       expr: histogram_quantile(0.99, sum(rate(kubelet_pod_worker_duration_seconds_bucket{job="kubelet-metrics"}[5m])) by (instance, le)) * on(instance) group_left(node) kubelet_node_name{job="kubelet-metrics"} > 60
       for: 15m
@@ -605,35 +605,35 @@ spec:
         severity: warning
     - alert: KubeletClientCertificateExpiration
       annotations:
-        description: Client certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
+        description: Client certificate for Kubelet on node {{ "$labels".node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet client certificate is about to expire.
       expr: kubelet_certificate_manager_client_ttl_seconds < 604800
       labels:
         severity: warning
     - alert: KubeletClientCertificateExpiration
       annotations:
-        description: Client certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
+        description: Client certificate for Kubelet on node {{ "$labels".node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet client certificate is about to expire.
       expr: kubelet_certificate_manager_client_ttl_seconds < 86400
       labels:
         severity: critical
     - alert: KubeletServerCertificateExpiration
       annotations:
-        description: Server certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
+        description: Server certificate for Kubelet on node {{ "$labels".node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet server certificate is about to expire.
       expr: kubelet_certificate_manager_server_ttl_seconds < 604800
       labels:
         severity: warning
     - alert: KubeletServerCertificateExpiration
       annotations:
-        description: Server certificate for Kubelet on node {{ $labels.node }} expires in {{ "$value" | humanizeDuration }}.
+        description: Server certificate for Kubelet on node {{ "$labels".node }} expires in {{ "$value" | humanizeDuration }}.
         summary: Kubelet server certificate is about to expire.
       expr: kubelet_certificate_manager_server_ttl_seconds < 86400
       labels:
         severity: critical
     - alert: KubeletClientCertificateRenewalErrors
       annotations:
-        description: Kubelet on node {{ $labels.node }} has failed to renew its client certificate ({{ "$value" | humanize }} errors in the last 5 minutes).
+        description: Kubelet on node {{ "$labels".node }} has failed to renew its client certificate ({{ "$value" | humanize }} errors in the last 5 minutes).
         summary: Kubelet has failed to renew its client certificate.
       expr: increase(kubelet_certificate_manager_client_expiration_renew_errors[5m]) > 0
       for: 15m
@@ -641,7 +641,7 @@ spec:
         severity: warning
     - alert: KubeletServerCertificateRenewalErrors
       annotations:
-        description: Kubelet on node {{ $labels.node }} has failed to renew its server certificate ({{ "$value" | humanize }} errors in the last 5 minutes).
+        description: Kubelet on node {{ "$labels".node }} has failed to renew its server certificate ({{ "$value" | humanize }} errors in the last 5 minutes).
         summary: Kubelet has failed to renew its server certificate.
       expr: increase(kubelet_server_expiration_renew_errors[5m]) > 0
       for: 15m
@@ -700,8 +700,8 @@ spec:
         description: |-
           Minio instance is offline
             VALUE = {{ "$value" }}
-            LABELS = {{ $labels }}
-        summary: Minio instance offline (instance {{ $labels.instance }})
+            LABELS = {{ "$labels" }}
+        summary: Minio instance offline (instance {{ "$labels".instance }})
       expr: minio_cluster_nodes_offline_total > 0
       for: 0m
       labels:
@@ -719,7 +719,7 @@ spec:
     rules:
     - alert: HostOomKillDetected
       annotations:
-        description: OOM kill activity detected on host {{ $labels.instance }}
+        description: OOM kill activity detected on host {{ "$labels".instance }}
         summary: OOM-killer activity
       expr: increase(node_vmstat_oom_kill[1m]) > 0
       for: 0m
@@ -727,7 +727,7 @@ spec:
         severity: warning
     - alert: NodeFilesystemSpaceFillingUp
       annotations:
-        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" "$value" }}% available space left and is filling up.
+        description: Filesystem on {{ "$labels".device }} at {{ "$labels".instance }} has only {{ printf "%.2f" "$value" }}% available space left and is filling up.
         summary: Filesystem is predicted to run out of space within the next 24 hours.
       expr: |-
         (
@@ -742,7 +742,7 @@ spec:
         severity: warning
     - alert: NodeFilesystemSpaceFillingUp
       annotations:
-        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" "$value" }}% available space left and is filling up fast.
+        description: Filesystem on {{ "$labels".device }} at {{ "$labels".instance }} has only {{ printf "%.2f" "$value" }}% available space left and is filling up fast.
         summary: Filesystem is predicted to run out of space within the next 4 hours.
       expr: |-
         (
@@ -757,7 +757,7 @@ spec:
         severity: critical
     - alert: NodeFilesystemRunningOutOfSpace
       annotations:
-        description: Filesystem on {{ $labels.device }} at {{ $labels.instance }} has only {{ printf "%.2f" "$value" }}% available space left.
+        description: Filesystem on {{ "$labels".device }} at {{ "$labels".instance }} has only {{ printf "%.2f" "$value" }}% available space left.
         summary: Filesystem has less than 5% space left.
       expr: |-
         (
@@ -781,7 +781,7 @@ spec:
     rules:
     - alert: OomKillDetected
       annotations:
-        description: Conainer in {{ $labels.namespace }}/{{ $labels.pod }} was OOMkilled
+        description: Conainer in {{ "$labels".namespace }}/{{ "$labels".pod }} was OOMkilled
         summary: OOM-killer activity
       expr: increase(container_ooms{namespace=~".*"}[1m]) > 0
       for: 0m
@@ -790,7 +790,7 @@ spec:
         severity: warning
     - alert: Мониторинг количества живых инстансов приложений
       annotations:
-        message: Количество реплик подов в деплойменте {{ $labels.deployment }} в неймспейсе {{ $labels.exported_namespace }} не соответствует заданному.
+        message: Количество реплик подов в деплойменте {{ "$labels".deployment }} в неймспейсе {{ "$labels".exported_namespace }} не соответствует заданному.
       expr: sum(kube_deployment_spec_replicas{exported_namespace=~".*"}) by (namespace,deployment,exported_namespace) - sum(kube_deployment_status_replicas_available{exported_namespace=~".*"}) by (namespace,deployment,exported_namespace) != 0
       for: 4m
       labels:
@@ -798,7 +798,7 @@ spec:
         severity: critical
     - alert: Мониторинг количества живых инстансов приложений
       annotations:
-        message: Обнаружены неработающие поды {{ $labels.exported_namespace }}/{{ $labels.exported_pod }} со статусом {{ $labels.phase }}
+        message: Обнаружены неработающие поды {{ "$labels".exported_namespace }}/{{ "$labels".exported_pod }} со статусом {{ "$labels".phase }}
       expr: (kube_pod_status_phase{exported_namespace=~".?prod|minio|.?sirius",phase!~"Running|Completed|Succeeded"})>0
       for: 4m
       labels:
@@ -806,8 +806,8 @@ spec:
         severity: critical
     - alert: Мониторинг количества живых инстансов приложений
       annotations:
-        message: Обнаружены поды со статусом "Evicted" {{ $labels.exported_namespace }}/{{
-          $labels.exported_pod }}
+        message: Обнаружены поды со статусом "Evicted" {{ "$labels".exported_namespace }}/{{
+          "$labels".exported_pod }}
       expr: sum by (exported_namespace,exported_pod,pod) (kube_pod_status_reason{reason="Evicted"}) > 0
       for: 3m
       labels:
@@ -815,7 +815,7 @@ spec:
         severity: critical
     - alert: Мониторинг количества живых инстансов приложений
       annotations:
-        message: Обнаружены неработающие поды cистемы обработки логов {{ $labels.exported_namespace }}/{{ $labels.pod }} со статусом {{ $labels.phase }}
+        message: Обнаружены неработающие поды cистемы обработки логов {{ "$labels".exported_namespace }}/{{ "$labels".pod }} со статусом {{ "$labels".phase }}
       expr: (kube_pod_status_phase{exported_namespace="logging",phase!~"Running|Completed|Succeeded"}) > 0
       for: 4m
       labels:
@@ -843,7 +843,7 @@ spec:
         severity: critical
     - alert: Postgresql Restarted
       annotations:
-        description: Postgresql instance {{ $labels.server }} was restarted
+        description: Postgresql instance {{ "$labels".server }} was restarted
         summary: Postgresql restarted
       expr: time() - pg_postmaster_start_time_seconds < 60
       for: 0m
@@ -862,7 +862,7 @@ spec:
         severity: warning
     - alert: Postgresql Too Many Connections
       annotations:
-        description: PostgreSQL instance {{ $labels.server }} has too many connections (> 80%).
+        description: PostgreSQL instance {{ "$labels".server }} has too many connections (> 80%).
         summary: Postgresql too many connections
       expr: sum by (datname,server) (pg_stat_activity_count{datname!~"template.*|postgres|bar"}) > (pg_settings_max_connections) * 0.8
       for: 2m
@@ -924,7 +924,7 @@ spec:
         labels:
           severity: critical
         annotations:
-          summary: "Instance {{ $labels.instance }} is dropping data from persistent queue"
+          summary: "Instance {{ "$labels".instance }} is dropping data from persistent queue"
           description: "Vmagent dropped {{ "$value" | humanize1024 }} from persistent queue
               for the last 10m."
       - alert: RejectedRemoteWriteDataBlocksAreDropped
@@ -933,7 +933,7 @@ spec:
         labels:
           severity: warning
         annotations:
-          summary: "Job {{ $labels.job }} drops the rejected by 
+          summary: "Job {{ "$labels".job }} drops the rejected by 
             remote-write server data blocks. Check the logs to find the reason for rejects."
       - alert: TooManyScrapeErrors
         expr: sum(increase(vm_promscrape_scrapes_failed_total[5m])) by (job, instance) > 0
@@ -941,7 +941,7 @@ spec:
         labels:
           severity: warning
         annotations:
-          summary: "Job {{ $labels.job }} fails to scrape targets for last 15m"
+          summary: "Job {{ "$labels".job }} fails to scrape targets for last 15m"
       - alert: TooManyWriteErrors
         expr: |
           (sum(increase(vm_ingestserver_request_errors_total[5m])) by (job, instance)
@@ -951,15 +951,15 @@ spec:
         labels:
           severity: warning
         annotations:
-          summary: "Job {{ $labels.job }} responds with errors to write requests for last 15m."
+          summary: "Job {{ "$labels".job }} responds with errors to write requests for last 15m."
       - alert: TooManyRemoteWriteErrors
         expr: sum(rate(vmagent_remotewrite_retries_count_total[5m])) by(job, instance, url) > 0
         for: 15m
         labels:
           severity: warning
         annotations:
-          summary: "Job {{ $labels.job }} fails to push to remote storage"
-          description: "Vmagent fails to push data via remote write protocol to destination {{ $labels.url }}\n
+          summary: "Job {{ "$labels".job }} fails to push to remote storage"
+          description: "Vmagent fails to push data via remote write protocol to destination {{ "$labels".url }}\n
             Ensure that destination is up and reachable."
       - alert: RemoteWriteConnectionIsSaturated
         expr: |
@@ -969,8 +969,8 @@ spec:
         labels:
           severity: warning
         annotations:
-          summary: "Remote write connection from {{ $labels.job }} (instance {{ $labels.instance }}) to {{ $labels.url }} is saturated"
-          description: "The remote write connection between vmagent {{ $labels.job }} (instance {{ $labels.instance }}) and destination {{ $labels.url }}
+          summary: "Remote write connection from {{ "$labels".job }} (instance {{ "$labels".instance }}) to {{ "$labels".url }} is saturated"
+          description: "The remote write connection between vmagent {{ "$labels".job }} (instance {{ "$labels".instance }}) and destination {{ "$labels".url }}
             is saturated by more than 90% and vmagent won't be able to keep up.\n
             This usually means that `-remoteWrite.queues` command-line flag must be increased in order to increase
             the number of connections per each remote storage."
@@ -981,7 +981,7 @@ spec:
           severity: warning
         annotations:
           summary: "Persistent queue writes for are saturated"
-          description: "Persistent queue writes for vmagent {{ $labels.job }} (instance {{ $labels.instance }})
+          description: "Persistent queue writes for vmagent {{ "$labels".job }} (instance {{ "$labels".instance }})
             are saturated by more than 90% and vmagent won't be able to keep up with flushing data on disk. 
             In this case, consider to decrease load on the vmagent or improve the disk throughput."
       - alert: PersistentQueueForReadsIsSaturated
@@ -991,7 +991,7 @@ spec:
           severity: warning
         annotations:
           summary: "Persistent queue reads for are saturated"
-          description: "Persistent queue reads for vmagent {{ $labels.job }} (instance {{ $labels.instance }})
+          description: "Persistent queue reads for vmagent {{ "$labels".job }} (instance {{ "$labels".instance }})
             are saturated by more than 90% and vmagent won't be able to keep up with reading data from the disk. 
             In this case, consider to decrease load on the vmagent or improve the disk throughput."
       - alert: SeriesLimitHourReached
@@ -999,7 +999,7 @@ spec:
         labels:
           severity: critical
         annotations:
-          summary: "Instance {{ $labels.instance }} reached 90% of the limit"
+          summary: "Instance {{ "$labels".instance }} reached 90% of the limit"
           description: "Max series limit set via -remoteWrite.maxHourlySeries flag is close to reaching the max value. 
             Then samples for new time series will be dropped instead of sending them to remote storage systems."
       - alert: SeriesLimitDayReached
@@ -1007,7 +1007,7 @@ spec:
         labels:
           severity: critical
         annotations:
-          summary: "Instance {{ $labels.instance }} reached 90% of the limit"
+          summary: "Instance {{ "$labels".instance }} reached 90% of the limit"
           description: "Max series limit set via -remoteWrite.maxDailySeries flag is close to reaching the max value. 
             Then samples for new time series will be dropped instead of sending them to remote storage systems."
       - alert: ConfigurationReloadFailure
@@ -1018,8 +1018,8 @@ spec:
         labels:
           severity: warning
         annotations:
-          summary: "Configuration reload failed for vmagent instance {{ $labels.instance }}"
-          description: "Configuration hot-reload failed for vmagent on instance {{ $labels.instance }}.
+          summary: "Configuration reload failed for vmagent instance {{ "$labels".instance }}"
+          description: "Configuration hot-reload failed for vmagent on instance {{ "$labels".instance }}.
             Check vmagent's logs for detailed error message."
   - name: vmalert
     rules:
@@ -1028,8 +1028,8 @@ spec:
         labels:
           severity: warning
         annotations:
-          summary: "Configuration reload failed for vmalert instance {{ $labels.instance }}"
-          description: "Configuration hot-reload failed for vmalert on instance {{ $labels.instance }}.
+          summary: "Configuration reload failed for vmalert instance {{ "$labels".instance }}"
+          description: "Configuration hot-reload failed for vmalert on instance {{ "$labels".instance }}.
             Check vmalert's logs for detailed error message."
       - alert: AlertingRulesError
         expr: sum(vmalert_alerting_rules_error) by(job, instance, group) > 0
@@ -1037,9 +1037,9 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/LzldHAVnz?viewPanel=13&var-instance={{ $labels.instance }}&var-group={{ $labels.group }}"
-          summary: "Alerting rules are failing for vmalert instance {{ $labels.instance }}"
-          description: "Alerting rules execution is failing for group {{ $labels.group }}.
+          dashboard: "http://localhost:3000/d/LzldHAVnz?viewPanel=13&var-instance={{ "$labels".instance }}&var-group={{ "$labels".group }}"
+          summary: "Alerting rules are failing for vmalert instance {{ "$labels".instance }}"
+          description: "Alerting rules execution is failing for group {{ "$labels".group }}.
             Check vmalert's logs for detailed error message."
       - alert: RecordingRulesError
         expr: sum(vmalert_recording_rules_error) by(job, instance, group) > 0
@@ -1047,9 +1047,9 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/LzldHAVnz?viewPanel=30&var-instance={{ $labels.instance }}&var-group={{ $labels.group }}"
-          summary: "Recording rules are failing for vmalert instance {{ $labels.instance }}"
-          description: "Recording rules execution is failing for group {{ $labels.group }}.
+          dashboard: "http://localhost:3000/d/LzldHAVnz?viewPanel=30&var-instance={{ "$labels".instance }}&var-group={{ "$labels".group }}"
+          summary: "Recording rules are failing for vmalert instance {{ "$labels".instance }}"
+          description: "Recording rules execution is failing for group {{ "$labels".group }}.
             Check vmalert's logs for detailed error message."
       - alert: RecordingRulesNoData
         expr: sum(vmalert_recording_rules_last_evaluation_samples) by(job, group, recording) < 1
@@ -1057,9 +1057,9 @@ spec:
         labels:
           severity: info
         annotations:
-          dashboard: "http://localhost:3000/d/LzldHAVnz?viewPanel=33&var-group={{ $labels.group }}"
-          summary: "Recording rule {{ $labels.recording }} ({ $labels.group }}) produces no data"
-          description: "Recording rule {{ $labels.recording }} from group {{ $labels.group }} 
+          dashboard: "http://localhost:3000/d/LzldHAVnz?viewPanel=33&var-group={{ "$labels".group }}"
+          summary: "Recording rule {{ "$labels".recording }} ({ "$labels".group }}) produces no data"
+          description: "Recording rule {{ "$labels".recording }} from group {{ "$labels".group }} 
             produces 0 samples over the last 30min. It might be caused by a misconfiguration 
             or incorrect query expression."
       - alert: RemoteWriteErrors
@@ -1078,7 +1078,7 @@ spec:
           severity: warning
         annotations:
           summary: "vmalert is failing to send notifications to Alertmanager"
-          description: "vmalert is failing to send alert notifications to {{ $labels.addr }}.
+          description: "vmalert is failing to send alert notifications to {{ "$labels".addr }}.
             Check vmalert's logs for detailed error message."
   - name: vmsingle
     rules:
@@ -1099,10 +1099,10 @@ spec:
         labels:
           severity: critical
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=73&var-instance={{ $labels.instance }}"
-          summary: "Instance {{ $labels.instance }} will run out of disk space soon"
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=73&var-instance={{ "$labels".instance }}"
+          summary: "Instance {{ "$labels".instance }} will run out of disk space soon"
           description: "Taking into account current ingestion rate, free disk space will be enough only
-            for {{ "$value" | humanizeDuration }} on instance {{ $labels.instance }}.\n
+            for {{ "$value" | humanizeDuration }} on instance {{ "$labels".instance }}.\n
             Consider to limit the ingestion rate, decrease retention or scale the disk space if possible."
       - alert: DiskRunsOutOfSpace
         expr: |
@@ -1115,8 +1115,8 @@ spec:
         labels:
           severity: critical
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=53&var-instance={{ $labels.instance }}"
-          summary: "Instance {{ $labels.instance }} will run out of disk space soon"
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=53&var-instance={{ "$labels".instance }}"
+          summary: "Instance {{ "$labels".instance }} will run out of disk space soon"
           description: "Disk utilisation is more than 80%.\n
             Having less than 20% of free disk space could cripple merges processes and overall performance.
             Consider to limit the ingestion rate, decrease retention or scale the disk space if possible."
@@ -1126,9 +1126,9 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=35&var-instance={{ $labels.instance }}"
-          summary: "Too many errors served for path {{ $labels.path }} (instance {{ $labels.instance }})"
-          description: "Requests to path {{ $labels.path }} are receiving errors.
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=35&var-instance={{ "$labels".instance }}"
+          summary: "Too many errors served for path {{ "$labels".path }} (instance {{ "$labels".instance }})"
+          description: "Requests to path {{ "$labels".path }} are receiving errors.
             Please verify if clients are sending correct requests."
       - alert: ConcurrentFlushesHitTheLimit
         expr: avg_over_time(vm_concurrent_insert_current[1m]) >= vm_concurrent_insert_capacity
@@ -1137,7 +1137,7 @@ spec:
           severity: warning
           show_at: dashboard
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=59&var-instance={{ $labels.instance }}"
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=59&var-instance={{ "$labels".instance }}"
           summary: "VictoriaMetrics is constantly hitting concurrent flushes limit"
           description: "The limit of concurrent flushes is equal to number of CPUs.\n
             When VictoriaMetrics constantly hits the limit it means that storage is overloaded and requires more CPU."
@@ -1147,10 +1147,10 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=58&var-instance={{ $labels.instance }}"
-          summary: "Some rows are rejected on {{ $labels.instance }} on ingestion attempt"
-          description: "VM is rejecting to ingest rows on {{ $labels.instance }} due to the
-            following reason: {{ $labels.reason }}"
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=58&var-instance={{ "$labels".instance }}"
+          summary: "Some rows are rejected on {{ "$labels".instance }} on ingestion attempt"
+          description: "VM is rejecting to ingest rows on {{ "$labels".instance }} due to the
+            following reason: {{ "$labels".reason }}"
       - alert: TooHighChurnRate
         expr: |
           (
@@ -1162,9 +1162,9 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=66&var-instance={{ $labels.instance }}"
-          summary: "Churn rate is more than 10% on {{ $labels.instance }} for the last 15m"
-          description: "VM constantly creates new time series on {{ $labels.instance }}.\n
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=66&var-instance={{ "$labels".instance }}"
+          summary: "Churn rate is more than 10% on {{ "$labels".instance }} for the last 15m"
+          description: "VM constantly creates new time series on {{ "$labels".instance }}.\n
             This effect is known as Churn Rate.\n
             High Churn Rate tightly connected with database performance and may
             result in unexpected OOM's or slow queries."
@@ -1177,10 +1177,10 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=66&var-instance={{ $labels.instance }}"
-          summary: "Too high number of new series on {{ $labels.instance }} created over last 24h"
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=66&var-instance={{ "$labels".instance }}"
+          summary: "Too high number of new series on {{ "$labels".instance }} created over last 24h"
           description: "The number of created new time series over last 24h is 3x times higher than
-            current number of active series on {{ $labels.instance }}.\n
+            current number of active series on {{ "$labels".instance }}.\n
             This effect is known as Churn Rate.\n
             High Churn Rate tightly connected with database performance and may
             result in unexpected OOM's or slow queries."
@@ -1195,9 +1195,9 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=68&var-instance={{ $labels.instance }}"
-          summary: "Percentage of slow inserts is more than 5% on {{ $labels.instance }} for the last 15m"
-          description: "High rate of slow inserts on {{ $labels.instance }} may be a sign of resource exhaustion
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=68&var-instance={{ "$labels".instance }}"
+          summary: "Percentage of slow inserts is more than 5% on {{ "$labels".instance }} for the last 15m"
+          description: "High rate of slow inserts on {{ "$labels".instance }} may be a sign of resource exhaustion
             for the current load. It is likely more RAM is needed for optimal handling of the current number of active time series.
             See also https://github.com/VictoriaMetrics/VictoriaMetrics/issues/3976#issuecomment-1476883183"
       - alert: LabelsLimitExceededOnIngestion
@@ -1206,8 +1206,8 @@ spec:
         labels:
           severity: warning
         annotations:
-          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=74&var-instance={{ $labels.instance }}"
-          summary: "Metrics ingested in ({{ $labels.instance }}) are exceeding labels limit"
+          dashboard: "http://localhost:3000/d/wNf0q_kZk?viewPanel=74&var-instance={{ "$labels".instance }}"
+          summary: "Metrics ingested in ({{ "$labels".instance }}) are exceeding labels limit"
           description: "VictoriaMetrics limits the number of labels per each metric with `-maxLabelsPerTimeseries` command-line flag.\n
             This prevents from ingesting metrics with too many labels. Please verify that `-maxLabelsPerTimeseries` is configured
             correctly or that clients which send these metrics aren't misbehaving."
@@ -1227,23 +1227,23 @@ spec:
         labels:
           severity: critical
         annotations:
-          summary: "{{ $labels.job }} too many restarts (instance {{ $labels.instance }})"
-          description: "Job {{ $labels.job }} (instance {{ $labels.instance }}) has restarted more than twice in the last 15 minutes. It might be crashlooping."
+          summary: "{{ "$labels".job }} too many restarts (instance {{ "$labels".instance }})"
+          description: "Job {{ "$labels".job }} (instance {{ "$labels".instance }}) has restarted more than twice in the last 15 minutes. It might be crashlooping."
       - alert: ServiceDown
         expr: up{job=~"victoriametrics.*|vmselect.*|vminsert.*|vmstorage.*|vmagent.*|vmalert.*|vmsingle.*|vmalertmanager.*"} == 0
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Service {{ $labels.job }} is down on {{ $labels.instance }}"
-          description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 2 minutes."
+          summary: "Service {{ "$labels".job }} is down on {{ "$labels".instance }}"
+          description: "{{ "$labels".instance }} of job {{ "$labels".job }} has been down for more than 2 minutes."
       - alert: TooHighMemoryUsage
         expr: (process_resident_memory_anon_bytes / vm_available_memory_bytes) > 0.8
         for: 5m
         labels:
           severity: critical
         annotations:
-          summary: "It is more than 80% of memory used by {{ $labels.job }}({{ $labels.instance }}) during the last 5m"
+          summary: "It is more than 80% of memory used by {{ "$labels".job }}({{ "$labels".instance }}) during the last 5m"
           description: "Too high memory usage may result into multiple issues such as OOMs or degraded performance. Consider to either increase available memory or decrease the load on the process."
       - alert: TooHighCPUUsage
         expr: rate(process_cpu_seconds_total[5m]) / process_cpu_cores_available > 0.9
@@ -1251,6 +1251,6 @@ spec:
         labels:
           severity: critical
         annotations:
-          summary: "More than 90% of CPU is used by {{ $labels.job }}({{ $labels.instance }}) during the last 5m"
+          summary: "More than 90% of CPU is used by {{ "$labels".job }}({{ "$labels".instance }}) during the last 5m"
           description: "Too high CPU usage may be a sign of insufficient resources and make process unstable. Consider to either increase available CPU resources or decrease the load on the process."
 {{- end }}
