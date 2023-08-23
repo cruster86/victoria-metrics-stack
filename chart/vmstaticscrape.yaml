@@ -1,0 +1,89 @@
+vmstaticscrape:
+  config:
+## cadvisor
+    - name: cadvisor-metrics
+      targetEndpoints:
+        - targets:
+            - "10.25.89.10:10250"
+            - "10.25.89.11:10250"
+            - "10.25.89.12:10250"
+            - "10.25.89.13:10250"
+            - "10.25.89.14:10250"
+            - "10.25.89.15:10250"
+            - "10.25.89.16:10250"
+            - "10.25.89.17:10250"
+            - "10.25.89.18:10250"
+            - "10.25.89.19:10250"
+            - "10.25.89.20:10250"
+            - "10.25.89.21:10250"
+          path: /metrics/cadvisor
+          scheme: https
+          scrapeTimeout: 15s
+          scrape_interval: 60s
+          labels:
+            component: cadvisor
+            cluster: univ-prod
+          path: /metrics/cadvisor
+          tlsConfig:
+            ca:
+              secret:
+                key: ca.crt
+                name: cadvisor-client-secret
+            cert:
+              secret:
+                key: apiserver-kubelet-client.crt
+                name: cadvisor-client-secret
+            keySecret:
+              key: apiserver-kubelet-client.key
+              name: cadvisor-client-secret
+            serverName: kubernets
+            insecureSkipVerify: true
+## etcd
+    - name: etcd-metrics
+      targetEndpoints:
+        - targets:
+            - "10.25.89.21:2381"
+          path: /metrics
+          scheme: http
+          scrapeTimeout: 15s
+          scrape_interval: 60s
+          labels:
+            component: etcd
+            cluster: univ-prod
+## kubelet
+    - name: kubelet-metrics
+      targetEndpoints:
+        - targets:
+            - "10.25.89.10:10250"
+            - "10.25.89.11:10250"
+            - "10.25.89.12:10250"
+            - "10.25.89.13:10250"
+            - "10.25.89.14:10250"
+            - "10.25.89.15:10250"
+            - "10.25.89.16:10250"
+            - "10.25.89.17:10250"
+            - "10.25.89.18:10250"
+            - "10.25.89.19:10250"
+            - "10.25.89.20:10250"
+            - "10.25.89.21:10250"
+          path: /metrics
+          scheme: https
+          scrapeTimeout: 15s
+          scrape_interval: 60s
+          labels:
+            component: kubelet
+            cluster: univ-prod
+          tlsConfig:
+            ca:
+              secret:
+                key: ca.crt
+                name: cadvisor-client-secret
+            cert:
+              secret:
+                key: apiserver-kubelet-client.crt
+                name: cadvisor-client-secret
+            keySecret:
+              key: apiserver-kubelet-client.key
+              name: cadvisor-client-secret
+            serverName: kubernets
+            insecureSkipVerify: true
