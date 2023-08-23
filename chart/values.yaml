@@ -20,6 +20,7 @@ vmrule:
 
 prometheusrule:
   enabled: true
+  groups: []
 
 # vmsingle values:
 
