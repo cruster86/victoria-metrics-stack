@@ -3,6 +3,9 @@ kind: VMAgent
 metadata:
   name: victoria-metrics-vmagent
 spec:
+  podMetadata:
+    labels:
+      release: {{ .Release.Name }}
   logFormat: {{ .Values.vmagent.logFormat }}
   logLevel: {{ .Values.vmagent.logLevel }}
   replicaCount: {{ .Values.vmagent.replicaCount }}

@@ -3,6 +3,9 @@ kind: VMAlert
 metadata:
   name: victoria-metrics-alertserver
 spec:
+  podMetadata:
+    labels:
+      release: {{ .Release.Name }}
   logFormat: {{ .Values.vmalert.logFormat }}
   logLevel: {{ .Values.vmalert.logLevel }}
   imagePullSecrets:

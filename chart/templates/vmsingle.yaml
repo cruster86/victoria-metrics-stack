@@ -3,6 +3,9 @@ kind: VMSingle
 metadata:
   name: victoria-metrics-single
 spec:
+  podMetadata:
+    labels:
+      release: {{ .Release.Name }}
   logFormat: {{ .Values.vmsingle.logFormat }}
   logLevel: {{ .Values.vmsingle.logLevel }}
   dnsPolicy: {{ .Values.vmsingle.dnsPolicy }}

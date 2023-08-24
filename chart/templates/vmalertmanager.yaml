@@ -3,6 +3,9 @@ kind: VMAlertmanager
 metadata:
   name: victoria-metrics-alertmanager
 spec:
+  podMetadata:
+    labels:
+      release: {{ .Release.Name }}
   imagePullSecrets:
 {{ toYaml .Values.imagePullSecrets | indent 4 }}
   logFormat: {{ .Values.vmalertmanager.logFormat }}
