@@ -10,8 +10,8 @@
 
 - [prometheusrule.yaml](https://gitlab.sirius.online/clusters/univ-prod/-/blob/main/helm/values/victoria-metrics-stack/prometheusrule.yaml) - дополнительные правила (тип: records) для алертинга и мониторинга (можно отключить в values)
 
-Настройки образов задаются через параметры (https://gitlab.sirius.online/clusters/univ-prod/-/tree/main/helm/values/victoria-metrics-operator)[victoria-metrics-operator] в блоке `env:`
+Настройки образов задаются через параметры [victoria-metrics-operator](https://gitlab.sirius.online/infra/victoria-metrics-operator/-/blob/main/chart/values.yaml) в блоке `env:`
 
-Сервисы для всех приложений из стека Виктории создаются с помощью victoria-metrics-operator.
+Сервисы для всех приложений из стека Виктории создаются с помощью параметров victoria-metrics-operator.
 
 Ингрессы для vmagent и vmalertmanager создаются из шаблонов и параметров чарта victoria-metrics-stack.
