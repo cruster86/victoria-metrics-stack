@@ -54,23 +54,26 @@ vmagent:
   scrapeInterval: 60s
   remoteWrite:
     - url: "http://vmsingle-victoria-metrics-single.monitoring.svc:8428/api/v1/write"
-      urlRelabelConfig:
-        name: "vmagent-relabel"
-        key: "relabel-rules.yaml"
+
   statefulMode: true
   statefulStorage:
     storageClassName: local-storage-monitoring
     volumeMode: Filesystem
     volumeName: pv-vmagent
     size: 20Gi
+
   ingress:
     enabled: true
     ingressClassName: nginx
     host: vmagent-univ-prod.sirius.online
     serviceName: vmagent-victoria-metrics-vmagent
     servicePort: 8429
+
   relabel:
     enabled: true
+  urlRelabelConfig:
+    name: "vmagent-relabel"
+    key: "relabel-rules.yaml"
   relabelconfig: {}
 
 ###   VMALERT VALUES:

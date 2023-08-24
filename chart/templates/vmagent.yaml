@@ -19,6 +19,12 @@ spec:
   staticScrapeNamespaceSelector: {}
   remoteWrite:
 {{ toYaml .Values.vmagent.remoteWrite | indent 4 }}
+  {{- if .Values.vmagent.relabel.enabled -}}
+    {{- with .Values.vmagent.urlRelabelConfig }}
+      urlRelabelConfig:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+  {{- end }}
   statefulMode: {{ .Values.vmagent.statefulMode }}
   statefulStorage:
     volumeClaimTemplate:
